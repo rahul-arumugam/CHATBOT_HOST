@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Research Paper Chatbot</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+   
+    <style>body {
+        font-family: Arial, sans-serif;
+    }
+    
+    .container {
+        margin: 20px auto;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    h1 {
+        margin-bottom: 20px;
+    }
+    
+    .chatbox {
+        border: 1px solid #ccc;
+        background-color: #f9f9f9;
+        padding: 10px;
+        height: 300px;
+        overflow-y: scroll;
+        margin-bottom: 10px;
+    }
+    
+    .chatbox p {
+        margin: 5px 0;
+    }
+    
+    .user-input {
+        margin-top: 10px;
+    }
+    
+    input[type="text"] {
+        flex: 1;
+    }
+    
+    /* Custom styling for user messages */
+    .chatbox .user {
+        color: #1a0dab;
+        text-align: left;
+    }
+    
+    /* Custom styling for chatbot responses */
+    .chatbox .chatbot {
+        color: #196127;
+        text-align: right;
+    }
+    
+    /* Responsive styles */
+    @media (max-width: 767px) {
+        .container {
+            max-width: 100%;
+        }
+    }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center mb-4">Research Paper Chatbot</h1>
+        <div class="chatbox" id="chatbox"></div>
+        <div class="user-input d-flex align-items-center">
+            <input type="text" id="userInput" class="form-control" placeholder="Enter your query...">
+            <button class="btn btn-primary ml-2" onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        function sendMessage() {
+            var userInput = document.getElementById("userInput").value;
+            appendMessage("user", "You: " + userInput);
+            document.getElementById("userInput").value = "";
+
+            fetch('/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'user_input=' + encodeURIComponent(userInput),
+            })
+            .then(response => response.json())
+            .then(data => {
+                var botResponse = "Bot: " + data.prediction;
+                appendMessage("bot", botResponse);
+            });
+        }
+
+        function appendMessage(sender, message) {
+            var chatbox = document.getElementById("chatbox");
+            var newMessage = document.createElement("p");
+            newMessage.textContent = message;
+            newMessage.className = "message " + sender;
+            chatbox.appendChild(newMessage);
+            chatbox.scrollTop = chatbox.scrollHeight;
+        }
+    </script>
+</body>
+</html>
